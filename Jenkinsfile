@@ -18,7 +18,6 @@ pipeline {
                 git branch: 'main', url: 'https://github.com/Narendraa-J/devops-ci-cd-pipeline.git'
              }
 }
-        }
 
         stage('Build Docker Image') {
             steps {
