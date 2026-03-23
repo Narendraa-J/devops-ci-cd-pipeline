@@ -13,11 +13,11 @@ pipeline {
             }
         }
 
-        stage('Clone Code') {
+        stage('Checkout Code') {
             steps {
                 git branch: 'main', url: 'https://github.com/Narendraa-J/devops-ci-cd-pipeline.git'
-             }
-}
+            }
+        }
 
         stage('Build Docker Image') {
             steps {
@@ -30,7 +30,8 @@ pipeline {
                 withCredentials([usernamePassword(
                     credentialsId: 'dockerhub-creds',
                     usernameVariable: 'USER',
-                    passwordVariable: 'PASS')]) {
+                    passwordVariable: 'PASS'
+                )]) {
                     sh 'echo $PASS | docker login -u $USER --password-stdin'
                 }
             }
@@ -42,15 +43,13 @@ pipeline {
             }
         }
 
-        stage('Deploy to EC2') {
+        stage('Deploy') {
             steps {
                 sh '''
-                ssh -o StrictHostKeyChecking=no ec2-user@43.205.111.30 << EOF
-                docker pull $DOCKER_IMAGE
+                docker pull narendraa2311/todo-app:latest
                 docker stop app || true
                 docker rm app || true
-                docker run -d -p 80:80 --name app $DOCKER_IMAGE
-                EOF
+                docker run -d -p 80:80 --name app narendraa2311/todo-app:latest
                 '''
             }
         }
